@@ -1,0 +1,5 @@
+#define configCount 1
+struct config_T configArray[configCount];
+void initConfig() {
+    configArray[0] = { (char*) "SSID", (char*) "WifiPassword", "http://myserver.example/switchboard.php?cmd=", "ping", "A", "B" };
+}
