@@ -1,20 +1,30 @@
 /**
  * Arduino IDE Hardware Settings:
+ * Original Version:
  * - Generic ESP8266
  * - Reset Mode: nodemcu
  * - Upload Speed: 256000
+ * 
+ * New Version:
+ * - WEMA LOLIN32
+ * - Flash Freq: 80Mhz
+ * - Speed: 25600
 */
 #include <Arduino.h>
 
-// #include <ESP8266WiFi.h>
-// #include <ESP8266WiFiMulti.h>
-// #include <ESP8266HTTPClient.h>
-// ESP8266WiFiMulti WiFiMulti;
+#ifdef ESP8266
+#include <ESP8266WiFi.h>
+#include <ESP8266WiFiMulti.h>
+#include <ESP8266HTTPClient.h>
+ESP8266WiFiMulti WiFiMulti;
+#endif
+
+#ifdef ESP32
 #include <WiFi.h>
 #include <WiFiMulti.h>
 #include <HTTPClient.h>
 WiFiMulti WiFiMulti;
-
+#endif
 
 #include <Adafruit_NeoPixel.h>
 
@@ -143,7 +153,26 @@ void doWifi(String param) {
   }
 }
 
+long t2 = 0;
+long t3 = 0;
+void touch() {
+#ifdef ESP32
+  long m = millis();
+  if (m % 50 != 0) return;
+  long t = touchRead(T4);
+  t2 = (t2 * 3 + t) / 4;
+  t3 = (t3 * 15 + t) / 16;
+  int ta = touchRead(T3);
+  int tb = touchRead(T2);
+  if (m % 100 == 0) {
+    Serial.printf("T: %4d, %4d, %4d - %4d - %4d\n", t, t2, t3, ta, tb);
+  }
+#endif
+}
+
 void loop() {
+  touch();
+  
   bouncerButtonA.update();
   bouncerButtonB.update();
 
